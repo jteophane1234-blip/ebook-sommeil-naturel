@@ -13,21 +13,18 @@ export async function POST(request: Request) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Sauvegarder l'email via Google Sheets webhook si configuré
-    const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
-    if (webhookUrl) {
-      try {
-        await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: normalizedEmail,
-            date: new Date().toISOString(),
-          }),
-        });
-      } catch {
-        // Si le webhook échoue, on continue quand même
-      }
+    // Sauvegarder l'email dans Google Sheets
+    try {
+      await fetch("https://script.google.com/macros/s/AKfycbyN2VUl_SyrNPbN75MWmmPQa9XWbF10yxhCyKeYnWcB3IW4m5bclXQxsjITXWuaSHHFGA/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          date: new Date().toISOString(),
+        }),
+      });
+    } catch {
+      // Si le webhook échoue, on continue quand même
     }
 
     return NextResponse.json({
