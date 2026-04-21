@@ -30,11 +30,14 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.png",
   },
+  metadataBase: new URL("https://dorsmieux.online"),
   openGraph: {
     title: "15 Recettes Culinaires Naturelles pour un Meilleur Sommeil",
     description:
       "Retrouvez un sommeil profond et réparateur grâce à 15 recettes culinaires 100% naturelles. Plan alimentaire de 30 jours inclus.",
     type: "website",
+    url: "https://dorsmieux.online",
+    siteName: "Dors Mieux",
   },
 };
 
