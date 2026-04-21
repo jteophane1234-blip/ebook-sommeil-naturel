@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  verification: {
-    bing: "7EC1F1CC4EF2BFB6250C97CEED23114E",
+  other: {
+    "msvalidate.01": "7EC1F1CC4EF2BFB6250C97CEED23114E",
   },
   title: "15 Recettes Culinaires Naturelles pour un Meilleur Sommeil | Ebook",
   description:
