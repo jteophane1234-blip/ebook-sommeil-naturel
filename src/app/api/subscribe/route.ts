@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         email: normalizedEmail,
         date: new Date().toISOString(),
       });
-      await fetch("https://script.google.com/macros/s/AKfycbyN2VUl_SyrNPbN75MWmmPQa9XWbF10yxhCyKeYnWcB3IW4m5bclXQxsjITXWuaSHHFGA/exec?" + params.toString());
+      await fetch("https://script.google.com/macros/s/AKfycbx3NW36WuCndrbcxPJVn0gI63Ulh2vC3WPA2jwCV_XFnVYAKPwwNc_77q7rs0s8NKkghg/exec?" + params.toString());
     } catch {
       // Si le webhook échoue, on continue quand même
     }
