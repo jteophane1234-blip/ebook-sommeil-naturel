@@ -13,16 +13,13 @@ export async function POST(request: Request) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Sauvegarder l'email dans Google Sheets
+    // Sauvegarder l'email dans Google Sheets via GET
     try {
-      await fetch("https://script.google.com/macros/s/AKfycbyN2VUl_SyrNPbN75MWmmPQa9XWbF10yxhCyKeYnWcB3IW4m5bclXQxsjITXWuaSHHFGA/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: normalizedEmail,
-          date: new Date().toISOString(),
-        }),
+      const params = new URLSearchParams({
+        email: normalizedEmail,
+        date: new Date().toISOString(),
       });
+      await fetch("https://script.google.com/macros/s/AKfycbyN2VUl_SyrNPbN75MWmmPQa9XWbF10yxhCyKeYnWcB3IW4m5bclXQxsjITXWuaSHHFGA/exec?" + params.toString());
     } catch {
       // Si le webhook échoue, on continue quand même
     }
