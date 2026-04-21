@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  verification: {
+    bing: "7EC1F1CC4EF2BFB6250C97CEED23114E",
+  },
   title: "15 Recettes Culinaires Naturelles pour un Meilleur Sommeil | Ebook",
   description:
     "Retrouvez un sommeil profond et réparateur grâce à 15 recettes culinaires 100% naturelles. Plan alimentaire de 30 jours inclus. Livraison instantanée par e-mail.",
