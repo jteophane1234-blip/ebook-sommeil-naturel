@@ -1,462 +1,437 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
+import Link from "next/link";
 import {
   Moon,
-  Leaf,
-  ShieldCheck,
-  Clock,
   Star,
-  CheckCircle2,
-  Mail,
-  BookOpen,
+  ShoppingCart,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+  Award,
+  Facebook,
+  Instagram,
+  Twitter,
   ChevronDown,
-  Sparkles,
-  Heart,
-  Utensils,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
+import { Navigation } from "@/components/navigation";
 import { useLanguage } from "@/components/language-provider";
-import { LanguageSelector } from "@/components/language-selector";
 
-const DIGISTORE_LINK = "https://www.digistore24.com/product/679282";
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+  paymentLink: string;
+  inStock: boolean;
+  features: string[];
+}
 
-const includedIcons = [BookOpen, Leaf, Utensils, Star, Clock, Mail];
+const products: Product[] = [
+  {
+    id: "prod-1",
+    name: "Masque de Sommeil en Soie",
+    description:
+      "Masque 100% soie naturelle pour une obscurité totale. Confort ultime pour des nuits paisibles.",
+    price: "14,99 \u20AC",
+    image: "/products/masque-sommeil.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["100% soie naturelle", "Obscurité totale", "Sangle ajustable"],
+  },
+  {
+    id: "prod-2",
+    name: "Bouchons d\u2019Oreilles Naturels",
+    description:
+      "Bouchons en cire d\u2019abeille naturelle. Isolation phonique optimale pour un sommeil profond.",
+    price: "9,99 \u20AC",
+    image: "/products/bouchons-oreilles.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["Cire d\u2019abeille", "Réutilisables", "Confort thermique"],
+  },
+  {
+    id: "prod-3",
+    name: "Couverture Lestée Premium",
+    description:
+      "Couverture lestée 7 kg pour une thérapie de pression douce. Sommeil profond garanti.",
+    price: "49,99 \u20AC",
+    image: "/products/couverture-lestee.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["7 kg", "Perles de verre", "Peluche ultra-douce"],
+  },
+  {
+    id: "prod-4",
+    name: "Oreiller Ergonomique",
+    description:
+      "Oreiller mémoire de forme pour un alignement cervical parfait. Adapte à votre position.",
+    price: "34,99 \u20AC",
+    image: "/products/oreiller-ergonomique.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["Mémoire de forme", "Anti-acariens", "Lavable"],
+  },
+  {
+    id: "prod-5",
+    name: "Diffuseur Huiles Essentielles",
+    description:
+      "Diffuseur ultrasonique bois et céramique. 10h d\u2019autonomie. 7 couleurs LED.",
+    price: "24,99 \u20AC",
+    image: "/products/diffuseur.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["300 ml", "Silencieux", "LED ambiance"],
+  },
+  {
+    id: "prod-6",
+    name: "Spray Oreiller Lavande",
+    description:
+      "Spray d\u2019oreiller à la lavande de Provence. 100% naturel pour une relaxation optimale.",
+    price: "12,99 \u20AC",
+    image: "/products/spray-oreiller.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["Lavande de Provence", "100% naturel", "200 utilisations"],
+  },
+  {
+    id: "prod-7",
+    name: "Veilleuse LED Lune",
+    description:
+      "Veilleuse en forme de lune en céramique. Lumière chaude apaisante pour la chambre.",
+    price: "16,99 \u20AC",
+    image: "/products/veilleuse.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["Céramique artisanale", "Capteur crépusculaire", "Faible consommation"],
+  },
+  {
+    id: "prod-8",
+    name: "Machine à Bruit Blanc",
+    description:
+      "30 sons naturels apaisants. Minuteur programmable. Compact et portable.",
+    price: "39,99 \u20AC",
+    image: "/products/machine-bruit.png",
+    paymentLink: "#lien-digistore-a-remplir",
+    inStock: true,
+    features: ["30 sons", "Minuteur", "USB + batterie"],
+  },
+];
+
+const trustBadges = [
+  {
+    icon: Truck,
+    title: "Livraison Europe",
+    description: "Expédition rapide dans toute l\u2019Europe",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Paiement Sécurisé",
+    description: "Transactions 100% sécurisées",
+  },
+  {
+    icon: RotateCcw,
+    title: "Satisfait ou Remboursé",
+    description: "Garantie 30 jours",
+  },
+  {
+    icon: Award,
+    title: "Qualité Premium",
+    description: "Produits testés et approuvés",
+  },
+];
+
+const INITIAL_VISIBLE = 4;
+
+function ProductCard({ product }: { product: Product }) {
+  return (
+    <Card className="group overflow-hidden border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300">
+      {/* Product image */}
+      <div className="relative bg-gradient-to-br from-purple-50 to-purple-100 p-6 flex items-center justify-center h-56">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="h-44 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+        />
+        {product.inStock && (
+          <Badge className="absolute top-3 left-3 bg-green-100 text-green-700 border-green-200 text-xs">
+            En stock
+          </Badge>
+        )}
+      </div>
+
+      <CardContent className="p-5 flex flex-col gap-3">
+        {/* Name */}
+        <h3 className="text-lg font-bold text-gray-900 leading-snug">
+          {product.name}
+        </h3>
+
+        {/* Description */}
+        <p className="text-sm text-gray-600 leading-relaxed">
+          {product.description}
+        </p>
+
+        {/* Feature tags */}
+        <div className="flex flex-wrap gap-1.5">
+          {product.features.map((feature) => (
+            <Badge
+              key={feature}
+              variant="outline"
+              className="text-xs border-purple-200 text-purple-700 bg-purple-50"
+            >
+              {feature}
+            </Badge>
+          ))}
+        </div>
+
+        <Separator className="bg-gray-100" />
+
+        {/* Price + CTA */}
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-2xl font-bold text-purple-700">
+            {product.price}
+          </span>
+          <a
+            href={product.paymentLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="bg-purple-700 hover:bg-purple-800 text-white font-semibold gap-2 shadow-sm">
+              <ShoppingCart className="w-4 h-4" />
+              Acheter
+            </Button>
+          </a>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Home() {
   const { t } = useLanguage();
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleProducts = showAll ? products : products.slice(0, INITIAL_VISIBLE);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 text-white overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-white">
+      <Navigation />
+
+      {/* Hero Banner */}
+      <section className="relative bg-gradient-to-br from-purple-800 via-purple-900 to-purple-950 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/pattern.png')] opacity-5" />
-        <div className="absolute top-20 right-10 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl" />
+        <div className="absolute top-10 right-20 w-72 h-72 bg-purple-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-purple-300/10 rounded-full blur-3xl" />
 
-        <div className="relative container mx-auto px-4 py-16 md:py-24 lg:py-32">
-          {/* Language Selector */}
-          <div className="flex justify-end mb-4">
-            <LanguageSelector />
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left space-y-6">
-              <Badge
-                variant="secondary"
-                className="bg-emerald-400/20 text-emerald-200 border-emerald-400/30 px-4 py-1.5 text-sm"
-              >
-                <Sparkles className="w-4 h-4 mr-1.5" />
-                {t.heroBadge}
-              </Badge>
-
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
-                {t.heroTitle1}{" "}
-                <span className="text-emerald-300">{t.heroTitleHighlight}</span>{" "}
-                {t.heroTitle2}
-              </h1>
-
-              <p className="text-lg md:text-xl text-emerald-100/90 max-w-xl mx-auto lg:mx-0">
-                {t.heroDescription1}{" "}
-                <strong className="text-white">
-                  {t.heroDescriptionStrong}
-                </strong>
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-                <a
-                  href={DIGISTORE_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button
-                    size="lg"
-                    className="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold text-lg px-8 py-6 rounded-xl shadow-lg shadow-emerald-400/25 transition-all duration-300 hover:shadow-emerald-400/40 hover:scale-105 w-full sm:w-auto"
-                  >
-                    {t.heroCta}
-                  </Button>
-                </a>
-                <div className="flex items-center gap-2 text-emerald-200/80 text-sm justify-center lg:justify-start">
-                  <ShieldCheck className="w-5 h-5 text-emerald-300" />
-                  <span>{t.heroGuarantee}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start pt-2 text-sm text-emerald-200/70">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> {t.heroDelivery}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> {t.heroFormat}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4" /> {t.heroLanguage}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex justify-center lg:justify-end">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-emerald-400/20 rounded-2xl blur-xl group-hover:bg-emerald-400/30 transition-all duration-500" />
-                <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                  <Image
-                    src="/ebook-cover.png"
-                    alt={t.coverAlt}
-                    width={420}
-                    height={560}
-                    className="w-full h-auto max-w-sm md:max-w-md"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="relative container mx-auto px-4 py-16 md:py-20 text-center">
+          <Badge className="bg-purple-400/20 text-purple-200 border-purple-400/30 px-4 py-1.5 text-sm mb-6">
+            <Moon className="w-4 h-4 mr-1.5" />
+            Boutique Dors Mieux
+          </Badge>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-3xl mx-auto">
+            Améliorez votre sommeil{" "}
+            <span className="text-purple-300">naturellement</span>
+          </h1>
+          <p className="text-lg text-purple-200/80 mt-4 max-w-2xl mx-auto">
+            Découvrez notre sélection d&apos;accessoires premium pour des nuits paisibles
+            et un sommeil réparateur.
+          </p>
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              {t.problemTitle}
+      {/* Products Section */}
+      <section className="py-12 md:py-16 bg-gray-50">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Nos Produits
             </h2>
-            <div className="w-20 h-1 bg-emerald-400 mx-auto rounded-full" />
+            <p className="text-gray-500 mt-2">
+              Soigneusement sélectionnés pour votre bien-être nocturne
+            </p>
+            <div className="w-16 h-1 bg-purple-600 mx-auto rounded-full mt-4" />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {t.problems.map((item, index) => (
-              <div key={index} className="flex items-start gap-3 p-4">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center font-bold text-sm mt-0.5">
-                  ✗
-                </div>
-                <p className="text-gray-700 leading-relaxed">{item}</p>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {visibleProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-xl md:text-2xl font-semibold text-emerald-700">
-              {t.problemCta1}
-              <br />
-              {t.problemCta2}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Solution / Benefits Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-emerald-50 to-white">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center space-y-4 mb-14">
-            <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-4 py-1.5">
-              <Leaf className="w-4 h-4 mr-1.5" />
-              {t.benefitsBadge}
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              {t.benefitsTitle}
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              {t.benefitsSubtitle}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {[
-              { icon: Moon, ...t.benefits[0] },
-              { icon: Leaf, ...t.benefits[1] },
-              { icon: Clock, ...t.benefits[2] },
-              { icon: Heart, ...t.benefits[3] },
-            ].map((benefit, index) => (
-              <Card
-                key={index}
-                className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white"
+          {products.length > INITIAL_VISIBLE && (
+            <div className="text-center mt-10">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setShowAll(!showAll)}
+                className="border-purple-300 text-purple-700 hover:bg-purple-50 hover:text-purple-800 gap-2"
               >
-                <CardContent className="p-6 md:p-8">
-                  <div className="w-14 h-14 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5">
-                    <benefit.icon className="w-7 h-7" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                {showAll ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Voir moins
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Voir tous les produits
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* What's Included Section */}
-      <section className="py-16 md:py-20 bg-white">
+      {/* Trust Badges Section */}
+      <section className="py-12 md:py-16 bg-white">
         <div className="container mx-auto px-4 max-w-5xl">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="text-center lg:text-left space-y-4 mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                  {t.includedTitle}
-                </h2>
-                <p className="text-gray-600 text-lg">{t.includedSubtitle}</p>
-              </div>
-
-              <div className="space-y-4">
-                {t.included.map((item, index) => {
-                  const Icon = includedIcons[index] || BookOpen;
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-start gap-4 p-3 rounded-lg hover:bg-emerald-50 transition-colors"
-                    >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <p className="text-gray-700 leading-relaxed pt-1.5">
-                        {item}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="flex justify-center">
-              <Image
-                src="/ebook-cover.png"
-                alt={t.includedCoverAlt}
-                width={380}
-                height={507}
-                className="w-full max-w-xs md:max-w-sm h-auto rounded-xl shadow-xl"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-teal-900 to-emerald-950 text-white">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center space-y-4 mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold">{t.howTitle}</h2>
-            <p className="text-emerald-200 text-lg max-w-2xl mx-auto">
-              {t.howSubtitle}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {t.steps.map((item, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {trustBadges.map((badge) => (
               <div
-                key={index}
-                className="relative text-center p-6 md:p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+                key={badge.title}
+                className="flex flex-col items-center text-center p-6 rounded-xl bg-purple-50/50 border border-purple-100"
               >
-                <div className="w-16 h-16 rounded-full bg-emerald-400 text-emerald-950 flex items-center justify-center text-2xl font-bold mx-auto mb-5">
-                  {index + 1}
+                <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mb-3">
+                  <badge.icon className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-emerald-200/90 leading-relaxed">
-                  {item.description}
-                </p>
+                <h3 className="font-bold text-gray-900 text-sm mb-1">
+                  {badge.title}
+                </h3>
+                <p className="text-xs text-gray-500">{badge.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-16 md:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center space-y-4 mb-14">
-            <Badge className="bg-amber-100 text-amber-700 border-amber-200 px-4 py-1.5">
-              <Star className="w-4 h-4 mr-1.5" />
-              {t.testimonialsBadge}
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              {t.testimonialsTitle}
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              {t.testimonialsSubtitle}
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {t.testimonials.map((testimonial, index) => (
-              <Card
-                key={index}
-                className="border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
-              >
-                <CardContent className="p-6 md:p-8">
-                  <div className="flex gap-1 mb-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-5 h-5 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-700 leading-relaxed mb-6 italic">
-                    &ldquo;{testimonial.text}&rdquo;
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
-                      {testimonial.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {testimonial.name}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {testimonial.location}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Guarantee Section */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-lg">
-            <CardContent className="p-8 md:p-12 text-center">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-6">
-                <ShieldCheck className="w-10 h-10" />
+      {/* Ebook CTA Banner */}
+      <section className="py-12 md:py-16 bg-gradient-to-r from-purple-50 to-purple-100">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <Card className="border-0 shadow-lg bg-white">
+            <CardContent className="p-8 md:p-10">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {t.guaranteeTitle}
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                Ebook offert : 15 Recettes pour mieux dormir
               </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-6">
-                {t.guaranteeText1}{" "}
-                <strong className="text-emerald-700">
-                  {t.guaranteeTextStrong}
-                </strong>{" "}
-                {t.guaranteeText2}
+              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                Complétez votre routine sommeil avec notre guide complet de
+                recettes culinaires naturelles. Plan alimentaire de 30 jours inclus.
               </p>
-              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-6 py-3 rounded-full font-semibold">
-                <CheckCircle2 className="w-5 h-5" />
-                {t.guaranteeBadge}
-              </div>
+              <Link href="/livre">
+                <Button
+                  size="lg"
+                  className="bg-purple-700 hover:bg-purple-800 text-white font-semibold gap-2 shadow-md"
+                >
+                  Découvrir l&apos;ebook
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-16 md:py-20 bg-gray-50">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center space-y-4 mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              {t.faqTitle}
-            </h2>
-            <p className="text-gray-600 text-lg">{t.faqSubtitle}</p>
-          </div>
-
-          <Accordion type="single" collapsible className="space-y-3">
-            {t.faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`faq-${index}`}
-                className="bg-white rounded-xl border border-gray-200 px-6 shadow-sm"
-              >
-                <AccordionTrigger className="text-left text-gray-900 font-semibold hover:no-underline py-5">
-                  <ChevronDown className="w-5 h-5 text-emerald-500 mr-2 flex-shrink-0" />
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 leading-relaxed pb-5">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/pattern.png')] opacity-5" />
-        <div className="absolute top-10 left-1/4 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-teal-400/10 rounded-full blur-3xl" />
-
-        <div className="relative container mx-auto px-4 max-w-3xl text-center space-y-8">
-          <h2 className="text-3xl md:text-5xl font-bold leading-tight">
-            {t.ctaTitle}
-          </h2>
-          <p className="text-xl text-emerald-100/90 max-w-2xl mx-auto">
-            {t.ctaDescription}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <a
-              href={DIGISTORE_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                size="lg"
-                className="bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold text-lg px-10 py-7 rounded-xl shadow-lg shadow-emerald-400/25 transition-all duration-300 hover:shadow-emerald-400/40 hover:scale-105"
-              >
-                {t.ctaButton}
-              </Button>
-            </a>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-emerald-200/70 pt-2">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4" /> {t.ctaGuarantee}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4" /> {t.ctaSecurePayment}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Mail className="w-4 h-4" /> {t.ctaInstantDelivery}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <BookOpen className="w-4 h-4" /> {t.ctaPdfPages}
-            </span>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="bg-emerald-950 text-emerald-300/70 py-8">
-        <div className="container mx-auto px-4 max-w-4xl text-center space-y-4">
-          <p className="text-sm">{t.footerText}</p>
-          <div className="flex justify-center gap-6 text-xs">
-            <a
-              href={DIGISTORE_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-emerald-200 transition-colors"
-            >
-              {t.footerPayment}
-            </a>
-            <span className="text-emerald-700">|</span>
-            <a
-              href="https://www.digistore24.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-emerald-200 transition-colors"
-            >
-              Digistore24
-            </a>
+      <footer className="bg-purple-950 text-purple-300/70 mt-auto">
+        <div className="container mx-auto px-4 py-12 max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Brand */}
+            <div className="space-y-4">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-lg bg-purple-700 flex items-center justify-center">
+                  <Moon className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-white tracking-tight">
+                  Dors <span className="text-purple-300">Mieux</span>
+                </span>
+              </Link>
+              <p className="text-sm text-purple-400/80 leading-relaxed">
+                Votre partenaire pour un sommeil de qualité. Accessoires premium
+                et conseils naturels pour des nuits réparatrices.
+              </p>
+            </div>
+
+            {/* Navigation */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-white text-sm uppercase tracking-wider">
+                Navigation
+              </h3>
+              <nav className="flex flex-col gap-2">
+                <Link
+                  href="/"
+                  className="text-sm hover:text-purple-300 transition-colors"
+                >
+                  Boutique
+                </Link>
+                <Link
+                  href="/livre"
+                  className="text-sm hover:text-purple-300 transition-colors"
+                >
+                  Ebook - 15 Recettes
+                </Link>
+              </nav>
+            </div>
+
+            {/* Social */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-white text-sm uppercase tracking-wider">
+                Suivez-nous
+              </h3>
+              <div className="flex items-center gap-3">
+                <a
+                  href="#"
+                  aria-label="Facebook"
+                  className="w-10 h-10 rounded-lg bg-purple-900/50 flex items-center justify-center hover:bg-purple-800 transition-colors"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+                <a
+                  href="#"
+                  aria-label="Instagram"
+                  className="w-10 h-10 rounded-lg bg-purple-900/50 flex items-center justify-center hover:bg-purple-800 transition-colors"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+                <a
+                  href="#"
+                  aria-label="Twitter"
+                  className="w-10 h-10 rounded-lg bg-purple-900/50 flex items-center justify-center hover:bg-purple-800 transition-colors"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+              </div>
+            </div>
           </div>
-          <p className="text-xs text-emerald-400/50">
-            {t.footerCopyright.replace("{year}", String(new Date().getFullYear()))}
-          </p>
+
+          <Separator className="bg-purple-800/50 my-8" />
+
+          <div className="text-center text-xs text-purple-500/60 space-y-1">
+            <p>© {new Date().getFullYear()} Dors Mieux. Tous droits réservés.</p>
+            <p>
+              Paiement sécurisé via{" "}
+              <a
+                href="https://www.digistore24.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-400 hover:text-purple-300 underline"
+              >
+                Digistore24
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
     </div>

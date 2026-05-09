@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   other: {
     "msvalidate.01": "7EC1F1CC4EF2BFB6250C97CEED23114E",
   },
-  title: "15 Recettes Culinaires Naturelles pour un Meilleur Sommeil | Ebook",
+  title: "Dors Mieux | Accessoires de Sommeil & Ebook",
   description:
-    "Retrouvez un sommeil profond et réparateur grâce à 15 recettes culinaires 100% naturelles. Plan alimentaire de 30 jours inclus. Livraison instantanée par e-mail.",
+    "Boutique d'accessoires premium pour un sommeil réparateur : masques en soie, couvertures lestées, diffuseurs et plus. Ebook gratuit : 15 recettes culinaires naturelles pour mieux dormir.",
   keywords: [
     "sommeil naturel",
     "recettes pour dormir",
@@ -29,6 +29,11 @@ export const metadata: Metadata = {
     "recettes culinaires naturelles",
     "meilleur sommeil",
     "plan alimentaire sommeil",
+    "accessoires sommeil",
+    "masque sommeil soie",
+    "couverture lestée",
+    "oreiller ergonomique",
+    "diffuseur huiles essentielles",
   ],
   icons: {
     icon: "/favicon.png",
@@ -38,9 +43,9 @@ export const metadata: Metadata = {
     canonical: "https://dorsmieux.online",
   },
   openGraph: {
-    title: "15 Recettes Culinaires Naturelles pour un Meilleur Sommeil",
+    title: "Dors Mieux | Accessoires de Sommeil & Ebook",
     description:
-      "Retrouvez un sommeil profond et réparateur grâce à 15 recettes culinaires 100% naturelles. Plan alimentaire de 30 jours inclus.",
+      "Boutique d'accessoires premium pour un sommeil réparateur et ebook gratuit : 15 recettes culinaires naturelles pour mieux dormir.",
     type: "website",
     url: "https://dorsmieux.online",
     siteName: "Dors Mieux",

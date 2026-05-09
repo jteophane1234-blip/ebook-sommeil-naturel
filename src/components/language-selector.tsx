@@ -10,15 +10,15 @@ export function LanguageSelector() {
 
   return (
     <div className="flex items-center gap-1.5">
-      <Globe className="w-4 h-4 text-emerald-300" />
+      <Globe className="w-4 h-4 text-purple-600" />
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value as Locale)}
-        className="bg-emerald-400/10 text-emerald-100 text-sm border border-emerald-400/20 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-400/40 cursor-pointer appearance-auto"
+        className="bg-purple-50 text-gray-700 text-sm border border-purple-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-400/40 cursor-pointer appearance-auto"
         aria-label="Select language"
       >
         {SUPPORTED_LOCALES.map((l) => (
-          <option key={l.code} value={l.code} className="bg-emerald-950 text-white">
+          <option key={l.code} value={l.code} className="bg-white text-gray-900">
             {l.flag} {l.label}
           </option>
         ))}
